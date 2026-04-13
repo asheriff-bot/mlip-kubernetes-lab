@@ -16,7 +16,8 @@ kind: CronJob
 metadata:
   name: model-trainer-job
 spec:
-  schedule: # TODO: implement a cron spec that runs every 1-2 minutes
+  # Every 2 minutes (minute field */2). Use "* * * * *" for every minute.
+  schedule: "*/2 * * * *"
   concurrencyPolicy: Forbid  # Don't start new job if previous still running
   successfulJobsHistoryLimit: 5         # keep only 5 (keep disk util low)
   failedJobsHistoryLimit: 5             # keep no more than 5 (keep disk util low)    
@@ -30,8 +31,10 @@ spec:
         spec:
           containers:
           - name: model-trainer
-            # TODO: Replace <DockerHub-Username> with your Docker Hub username, and use the appropriate image name and tag
-            image: <DockerHub-Username>/<model-training-image-name>:<model-training-image-tag>
+            # Replace <DockerHub-Username> with your Docker Hub username (see README "Build and Push the Docker Image").
+            # Example: docker build -t janedoe/mlip-model-trainer:1.0.0 -f Dockerfile.trainer . && docker push janedoe/mlip-model-trainer:1.0.0
+            image: akramdocke/mlip-model-trainer:1.0.0
+            imagePullPolicy: Always
             volumeMounts:
             - name: model-volume
               mountPath: /shared-volume
